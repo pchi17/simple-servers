@@ -7,10 +7,11 @@ server = TCPServer.new(2000)
 
 loop do
   # This returns a random number between 0 and 9999.
-  number_to_guess = rand(10000)
-
+  number_to_guess = rand(10)
+  puts "Waiting for connection at port #{server.addr[1]}"
   # Wait for a client to connect
-  #
+  client = server.accept
+  client.puts 'CONNECTED'
   # Once a client has connected, they will stay connected until they disconnect
   # themselves or guess the correct number
   #
@@ -21,6 +22,18 @@ loop do
   #    send "too cold" back to the client and wait for next guess
   # If the guess is correct,
   #   send "juuuuust right" back to the client and close the connection
+  loop do
+    input = client.gets.to_i
+    if input > number_to_guess
+      client.puts 'too hot'
+    elsif input < number_to_guess
+      client.puts 'too cold'
+    else
+      client.puts 'juuuuust right'
+      break
+    end
+  end
+  client.close
 end
 
 # Note #1
